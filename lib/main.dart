@@ -7,16 +7,16 @@ void main() async {
   String route = MyRoute.home.name;
 
   runApp(
-    App(
+    MyApp(
       initialRoute: route,
     ),
   );
 }
 
-class App extends StatelessWidget {
+class MyApp extends StatelessWidget {
   final String initialRoute;
 
-  const App({
+  const MyApp({
     super.key,
     required this.initialRoute,
   });
