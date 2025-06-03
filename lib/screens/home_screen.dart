@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:notification_app/providers/local_notification_provider.dart';
 import 'package:notification_app/widgets/my_divider.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,10 +27,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async {
                   await _requestPermission();
                 },
-                child: const Text(
-                  "Request permission! (false)",
-                  textAlign: TextAlign.center,
-                ),
+                child: Consumer<LocalNotificationProvider>(
+                  builder: (context, value, child) {
+                    return Text(
+                      'Request permission! (${value.permission})',
+                      textAlign: TextAlign.center,
+                    );
+                  } 
+                )
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -102,9 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _requestPermission() async {}
+  Future<void> _requestPermission() async {
+    context.read<LocalNotificationProvider>().requestPermissions();
+  }
 
-  Future<void> _showNotification() async {}
+  Future<void> _showNotification() async {
+    context.read<LocalNotificationProvider>().showNotification();
+  }
 
   Future<void> _showBigPictureNotification() async {}
 
