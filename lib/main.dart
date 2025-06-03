@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notification_app/providers/local_notification_provider.dart';
 import 'package:notification_app/providers/payload_provider.dart';
 import 'package:notification_app/screens/detail_screen.dart';
