@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notification_app/providers/local_notification_provider.dart';
+import 'package:notification_app/providers/payload_provider.dart';
 import 'package:notification_app/screens/detail_screen.dart';
 import 'package:notification_app/screens/home_screen.dart';
 import 'package:notification_app/services/local_notification_service.dart';
@@ -7,8 +9,19 @@ import 'package:notification_app/static/my_route.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  String route = MyRoute.home.name;
+  WidgetsFlutterBinding.ensureInitialized();
+  final notificationAppLaunchDetails = await flutterLocalNotificationPlugin
+      .getNotificationAppLaunchDetails();
 
+  String route = MyRoute.home.name;
+  String? payload;
+
+  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+    final notificationResponse =
+        notificationAppLaunchDetails!.notificationResponse;
+    route = MyRoute.detail.name;
+    payload = notificationResponse?.payload;
+  }
   runApp(
     MultiProvider(
       providers: [
@@ -17,6 +30,9 @@ void main() async {
           create: (context) => LocalNotificationProvider(
             context.read<LocalNotificationService>(),
           )..requestPermissions(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => PayloadProvider(payload: payload),
         ),
       ],
       child: MyApp(initialRoute: route),
