@@ -28,7 +28,7 @@ void main() async {
         Provider(create: (context) => HttpService()),
         Provider(create: (context) => LocalNotificationService(
           context.read<HttpService>(),
-        )..init()),
+        )..init()..configureLocalTimeZone()),
         ChangeNotifierProvider(
           create: (context) => LocalNotificationProvider(
             context.read<LocalNotificationService>(),
