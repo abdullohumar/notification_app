@@ -14,28 +14,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void _configureSelectNotificationSubject(){
+  void _configureSelectNotificationSubject() {
     selectNotificationStream.stream.listen((String? payload) {
       context.read<PayloadProvider>().payload = payload;
       Navigator.pushNamed(context, MyRoute.detail.name, arguments: payload);
     });
   }
+
   @override
   void initState() {
     super.initState();
     _configureSelectNotificationSubject();
   }
+
   @override
   void dispose() {
     selectNotificationStream.close();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home Screen"),
-      ),
+      appBar: AppBar(title: const Text("Home Screen")),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -52,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Request permission! (${value.permission})',
                       textAlign: TextAlign.center,
                     );
-                  } 
-                )
+                  },
+                ),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -139,9 +140,68 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<LocalNotificationProvider>().showBigPictureNotification();
   }
 
-  Future<void> _scheduleDailyTenAMNotification() async {}
+  Future<void> _scheduleDailyTenAMNotification() async {
+    context.read<LocalNotificationProvider>().scheduleDailyTenAMNotification();
+  }
 
-  Future<void> _checkPendingNotificationRequests() async {}
+  Future<void> _checkPendingNotificationRequests() async {
+    final localNotificationProvider = context.read<LocalNotificationProvider>();
+    await localNotificationProvider.checkPendingNotificationRequests(context);
+
+    if (!mounted) return;
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final pendingData = context.select(
+          (LocalNotificationProvider provider) =>
+              provider.pendingNotificationRequests,
+        );
+        return AlertDialog(
+          title: Text(
+            '${pendingData.length} Pending Notification Requests',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          content: SizedBox(
+            height: 300,
+            width: 300,
+            child: ListView.builder(
+              itemCount: pendingData.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final item = pendingData[index];
+                return ListTile(
+                  title: Text(
+                    item.title ?? " ",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    item.body ?? " ",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  contentPadding: EdgeInsets.zero,
+                  trailing: IconButton(
+                    onPressed: () {
+                      localNotificationProvider
+                        ..cancelNotification(item.id)
+                        ..checkPendingNotificationRequests(context);
+                    },
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(onPressed: () {}, child: const Text("Ongke")),
+          ],
+        );
+      },
+    );
+  }
 
   void _runBackgroundOneOffTask() async {}
 
