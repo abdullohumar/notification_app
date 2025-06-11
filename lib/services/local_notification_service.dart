@@ -83,17 +83,18 @@ class LocalNotificationService {
         sound: true,
       );
     } else if (defaultTargetPlatform == TargetPlatform.android) {
-      final androidImplementation = flutterLocalNotificationPlugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      final requestNotificationsPermission = await androidImplementation
-          ?.requestNotificationsPermission();
-      final notificationEnable = await _isAndroidPermissionGranted();
-      final requestAlarmEnable = await _requestExactAlarmPermission();
-      return (requestNotificationsPermission ?? false) &&
-          notificationEnable &&
-          requestAlarmEnable;
+      final notificationEnabled = await _isAndroidPermissionGranted();
+      final requestAlarmEnabled = await _requestExactAlarmPermission();
+      if (!notificationEnabled) {
+        final requestNotificationsPermission =
+            await _requestAndroidNotificationsPermission();
+        return requestNotificationsPermission 
+            &&
+            requestAlarmEnabled;
+      }
+      return notificationEnabled 
+          &&
+          requestAlarmEnabled;
     } else {
       return false;
     }
