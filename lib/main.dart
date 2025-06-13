@@ -6,6 +6,7 @@ import 'package:notification_app/screens/home_screen.dart';
 import 'package:notification_app/services/http_service.dart';
 import 'package:notification_app/services/local_notification_service.dart';
 import 'package:notification_app/static/my_route.dart';
+import 'package:notification_app/static/workmanager_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -37,6 +38,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => PayloadProvider(payload: payload),
         ),
+        Provider(create: (context) => WorkmanagerService()..init()),
       ],
       child: MyApp(initialRoute: route),
     ),
